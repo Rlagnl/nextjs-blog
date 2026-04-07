@@ -4,7 +4,11 @@ import Date from "../../components/date";
 import { getAllPostIds, getPostData } from "../../lib/posts";
 import utilStyles from "../../styles/utils.module.scss";
 
-export default function Post({ postData }) {
+import type { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
+
+export default function Post({
+  postData,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
     <Layout>
       <Head>
@@ -21,21 +25,24 @@ export default function Post({ postData }) {
   );
 }
 
-export async function getStaticPaths() {
+export const getStaticPaths: GetStaticPaths = async () => {
   // Return a list of possible value for id
   const paths = getAllPostIds();
   return {
     paths,
     fallback: false,
   };
-}
+};
 
-export async function getStaticProps({ params }) {
+export const getStaticProps: GetStaticProps<{
+  postData: Awaited<ReturnType<typeof getPostData>>;
+}> = async ({ params }) => {
   // Fetch necessary data for the blog post using params.id
-  const postData = await getPostData(params.id);
+  const id = typeof params?.id === "string" ? params.id : "";
+  const postData = await getPostData(id);
   return {
     props: {
       postData,
     },
   };
-}
+};

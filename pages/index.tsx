@@ -5,16 +5,22 @@ import Layout, { siteTitle } from "../components/layout";
 import { getSortedPostsData } from "../lib/posts";
 import utilStyles from "../styles/utils.module.scss";
 
-export async function getStaticProps() {
+import type { GetStaticProps, InferGetStaticPropsType } from "next";
+
+export const getStaticProps: GetStaticProps<{
+  allPostsData: ReturnType<typeof getSortedPostsData>;
+}> = async () => {
   const allPostsData = getSortedPostsData();
   return {
     props: {
       allPostsData,
     },
   };
-}
+};
 
-export default function Home({ allPostsData }) {
+export default function Home({
+  allPostsData,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
     <Layout home>
       <Head>
